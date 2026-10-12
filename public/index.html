@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>AI 자동 웹사이트 개선 플랫폼</title>
+  <style>
+    body { font-family: sans-serif; margin: 30px; background-color: #f8fafc; }
+    .box { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    input[type="url"] { width: 65%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 16px; }
+    button { padding: 12px 20px; background-color: #2563eb; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+    pre { background: #0f172a; color: #f8fafc; padding: 15px; border-radius: 8px; white-space: pre-wrap; font-size: 13px; max-height: 500px; overflow-y: auto; }
+    #status { font-weight: bold; margin-top: 15px; color: #0284c7; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>🤖 Gemini & Grok 연계 자동 웹 개선 플랫폼</h1>
+    <p>분석할 웹사이트 주소를 입력하고 버튼을 누르세요.</p>
+    <div>
+      <input type="url" id="urlInput" value="https://example.com">
+      <button onclick="runPipeline()">자동 개선 시작</button>
+    </div>
+    <div id="status"></div>
+  </div>
+
+  <div class="grid">
+    <div class="box">
+      <h2>1단계: Gemini (AI A) 분석</h2>
+      <pre id="geminiOutput">대기 중...</pre>
+    </div>
+    <div class="box">
+      <h2>2단계: Grok (AI B) 최종 완성</h2>
+      <pre id="groqOutput">대기 중...</pre>
+    </div>
+  </div>
+
+  <script>
+    async function runPipeline() {
+      const url = document.getElementById('urlInput').value;
+      const status = document.getElementById('status');
+      if (!url) return alert('URL을 입력해주세요!');
+
+      status.innerText = '⏳ Gemini가 사이트를 분석 중입니다...';
+      try {
+        const res = await fetch('/api/auto-pipeline', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targetUrl: url })
+        });
+        const data = await res.json();
+        if (data.success) {
+          status.innerText = '✅ 모든 연계 작업이 완료되었습니다!';
+          document.getElementById('geminiOutput').innerText = data.geminiResult;
+          document.getElementById('groqOutput').innerText = data.groqResult;
+        } else {
+          status.innerText = '❌ 오류: ' + data.message;
+        }
+      } catch (err) {
+        status.innerText = '❌ 통신 실패: ' + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
